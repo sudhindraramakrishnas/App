@@ -1,0 +1,22 @@
+name: Sync to Hugging face Spaces
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+  jobs:
+    sync-to-spaces:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Sync to Spaces
+        run : git filter-branch --index-filter 'git rm --cached --ignore-unmatch -r . && git mv -f .gitattributes .gitattributes' -- --all
+
+      - name: Push to space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: git push --force https://sudhisrk1982:$HF_TOKEN@huggingface.co/spaces/sudhisrk1982/Chatbot main
